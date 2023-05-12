@@ -14,6 +14,7 @@
         <meta name="theme-color" content="#ffffff" />
         <meta name="author" content="Fish Eleven" />
         <meta name="description" content="Geomtoy is a 2D geometry responsive computing, visualizing and interacting library." />
+        <link rel="stylesheet" href="prism-vs.css" />
         <style>
             .icon-square {
                 width: 5rem;
@@ -109,21 +110,117 @@
                     <span class="fs-4 fw-bold">Geomtoy</span>
                 </a>
 
-                <ul class="nav col-12 col-md-auto mb-2 justify-content-right mb-md-0">
+                <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
                     <li class="nav-item"><a href="https://docs.geomtoy.com" class="nav-link px-2 link-dark">Docs</a></li>
                     <li class="nav-item"><a href="https://examples.geomtoy.com" class="nav-link px-2 link-dark">Examples</a></li>
                 </ul>
             </header>
         </div>
 
-        <div class="container pt-5 my-5 text-center">
+        <div class="container pt-5 mt-5 text-center">
             <h1 class="display-1 fw-bold">Geomtoy</h1>
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">A 2D geometry responsive computing, visualizing and interacting library.</p>
             </div>
-            <div class="overflow-hidden" style="max-height: 30vh">
-                <div class="container px-5"></div>
+            <div class="container px-0 py-5" style="height: 75vh">
+                <svg id="svg"></svg>
             </div>
+            <script src="https://cdn.jsdelivr.net/npm/geomtoy@latest/dist/index.min.js"></script>
+            <script>
+                const renderer = new Geomtoy.SVGRenderer(document.querySelector("#svg"), {}, { density: 10, zoom: 0.3, yAxisPositiveOnBottom: false });
+                const view = new Geomtoy.View({}, renderer);
+                view.startResponsive(Geomtoy.View.centerOrigin);
+                view.startInteractive();
+
+                const rectangle = new Geomtoy.Rectangle([0, 0], 20, 20).toPolygon();
+                const circle = new Geomtoy.Circle([0, 0], 20).toPath();
+
+                const styleRed = {
+                    style: {
+                        stroke: "#f44336cc",
+                        fill: "#f4433680",
+                        strokeWidth: 2
+                    }
+                };
+                const styleBlue = {
+                    style: {
+                        stroke: "#2196f3cc",
+                        fill: "#2196f380",
+                        strokeWidth: 2
+                    }
+                };
+                const stylePurple = {
+                    style: {
+                        stroke: "#9c27b0cc",
+                        fill: "#9c27b080",
+                        strokeWidth: 2
+                    }
+                };
+
+                const bo = new Geomtoy.BooleanOperation();
+
+                const booleanOperations = new Geomtoy.SealedGeometryObject({
+                    union: new Geomtoy.Compound(),
+                    intersection: new Geomtoy.Compound(),
+                    difference: new Geomtoy.Compound(),
+                    differenceReverse: new Geomtoy.Compound()
+                }).bind([rectangle, "any"], [circle, "any"], function (e1, e2) {
+                    const description = bo.describe(e1.target, e2.target);
+                    this.items.union.copyFrom(bo.chain(bo.selectUnion(description)).move(-50, 0));
+                    this.items.intersection.copyFrom(bo.chain(bo.selectIntersection(description)).move(50, 0));
+                    this.items.difference.copyFrom(bo.chain(bo.selectDifference(description)).move(0, 50));
+                    this.items.differenceReverse.copyFrom(bo.chain(bo.selectDifferenceReverse(description)).move(0, -50));
+                });
+
+                const font = {
+                    fontSize: 16,
+                    fontFamily: "sans-serif",
+                    fontBold: false,
+                    fontItalic: false
+                };
+                const fontStyle = {
+                    style: {
+                        noStroke: true,
+                        fill: "#9c27b0"
+                    }
+                };
+
+                const text1 = new Geomtoy.Text(-75, 0, 0, 0, "Union", font, Geomtoy.Anchor.RightCenter);
+                const text2 = new Geomtoy.Text(75, 0, 0, 0, "Intersection", font, Geomtoy.Anchor.LeftCenter);
+                const text3 = new Geomtoy.Text(0, 75, 0, 0, "Difference", font, Geomtoy.Anchor.CenterBottom);
+                const text4 = new Geomtoy.Text(0, -75, 0, 0, "DifferenceReverse", font, Geomtoy.Anchor.CenterTop);
+
+                view.add(
+                    new Geomtoy.ViewElement(rectangle, {
+                        type: Geomtoy.ViewElementType.Activation,
+                        ...styleRed
+                    }),
+                    new Geomtoy.ViewElement(circle, {
+                        type: Geomtoy.ViewElementType.None,
+                        ...styleBlue
+                    }),
+                    new Geomtoy.ViewElement(booleanOperations, {
+                        type: Geomtoy.ViewElementType.None,
+                        ...stylePurple
+                    }),
+                    new Geomtoy.ViewElement(text1, {
+                        type: Geomtoy.ViewElementType.None,
+                        ...fontStyle
+                    }),
+                    new Geomtoy.ViewElement(text2, {
+                        type: Geomtoy.ViewElementType.None,
+                        ...fontStyle
+                    }),
+                    new Geomtoy.ViewElement(text3, {
+                        type: Geomtoy.ViewElementType.None,
+                        ...fontStyle
+                    }),
+                    new Geomtoy.ViewElement(text4, {
+                        type: Geomtoy.ViewElementType.None,
+                        ...fontStyle
+                    })
+                );
+            </script>
         </div>
 
         <div class="container pt-5">
@@ -251,16 +348,40 @@
         </div>
 
         <div class="container pt-5">
-            <h2 class="mb-3">Usage</h2>  
+            <h2 class="mb-3">Usage</h2>
 
-            <h3 class="mb-3 py-2 border-bottom">Usage with CDNs</h3>
+            <h3 class="mb-3 py-2 border-bottom">Usage via CDN</h3>
+            <pre><code class="language-html">
+&lt;!-- All-in-one bundle package --&gt;       
+&lt;script src="https://cdn.jsdelivr.net/npm/geomtoy@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/browse/geomtoy@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
 
-            <h3 class="mb-3 py-2 border-bottom">Usage with bundlers</h3>
+&lt;!-- Specified packages --&gt;
+&lt;!-- @geomtoy/util --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@geomtoy/util@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/browse/@geomtoy/util@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
 
-            <h3 class="mb-3 py-2 border-bottom">Usage with bundlers</h3>
+&lt;!-- @geomtoy/core --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@geomtoy/core@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/browse/@geomtoy/core@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
+
+&lt;!-- @geomtoy/view --&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/@geomtoy/view@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
+&lt;script src="https://unpkg.com/browse/@geomtoy/view@{{version}}/dist/index.min.js"&gt;&lt;/script&gt;
+            </code></pre>
+
+            <h3 class="mb-3 py-2 border-bottom">Usage via npm</h3>
+
+            <pre><code class="language-sh">
+# Install all-in-one bundle package
+npm i geomtoy
+
+# Install specified packages
+npm i @geomtoy/util
+npm i @geomtoy/core
+npm i @geomtoy/view
+            </code></pre>
         </div>
-
-       
 
         <div class="container">
             <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
@@ -269,5 +390,8 @@
                 </div>
             </footer>
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
     </body>
 </html>
