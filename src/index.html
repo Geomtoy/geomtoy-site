@@ -14,7 +14,7 @@
         <meta name="theme-color" content="#ffffff" />
         <meta name="author" content="Fish Eleven" />
         <meta name="description" content="Geomtoy is a 2D geometry responsive computing, visualizing and interacting library." />
-        <link rel="stylesheet" href="prism-vs.css" />
+        <link rel="stylesheet" href="prism-bs.css" />
         <style>
             .icon-square {
                 width: 5rem;
@@ -133,9 +133,10 @@
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">A 2D geometry responsive computing, visualizing and interacting library.</p>
             </div>
-            <div class="container px-0 py-5" style="height: 75vh">
+            <div class="container px-0 pt-5 pb-3" style="height: 75vh">
                 <svg id="svg"></svg>
             </div>
+            <small class="text-bg-dark">* The blue rectangle is movable.</small>
             <script src="https://cdn.jsdelivr.net/npm/geomtoy@latest/dist/index.min.js"></script>
             <script>
                 const renderer = new Geomtoy.SVGRenderer(document.querySelector("#svg"), {}, { density: 10, zoom: 0.3, yAxisPositiveOnBottom: false });
@@ -146,24 +147,24 @@
                 const rectangle = new Geomtoy.Rectangle([0, 0], 20, 20).toPolygon();
                 const circle = new Geomtoy.Circle([0, 0], 20).toPath();
 
-                const styleRed = {
+                const styleLight = {
                     style: {
-                        stroke: "#f44336cc",
-                        fill: "#f4433680",
+                        stroke: "#adb5bdcc",
+                        fill: "#adb5bd80",
+                        strokeWidth: 2
+                    }
+                };
+                const styleDark = {
+                    style: {
+                        stroke: "#343a40cc",
+                        fill: "#343a4080",
                         strokeWidth: 2
                     }
                 };
                 const styleBlue = {
                     style: {
-                        stroke: "#2196f3cc",
-                        fill: "#2196f380",
-                        strokeWidth: 2
-                    }
-                };
-                const stylePurple = {
-                    style: {
-                        stroke: "#9c27b0cc",
-                        fill: "#9c27b080",
+                        stroke: "#0d6efdcc",
+                        fill: "#0d6efd80",
                         strokeWidth: 2
                     }
                 };
@@ -192,7 +193,7 @@
                 const fontStyle = {
                     style: {
                         noStroke: true,
-                        fill: "#9c27b0"
+                        fill: "#343a40"
                     }
                 };
 
@@ -204,15 +205,15 @@
                 view.add(
                     new Geomtoy.ViewElement(rectangle, {
                         type: Geomtoy.ViewElementType.Activation,
-                        ...styleRed
+                        ...styleBlue
                     }),
                     new Geomtoy.ViewElement(circle, {
                         type: Geomtoy.ViewElementType.None,
-                        ...styleBlue
+                        ...styleLight
                     }),
                     new Geomtoy.ViewElement(booleanOperations, {
                         type: Geomtoy.ViewElementType.None,
-                        ...stylePurple
+                        ...styleDark
                     }),
                     new Geomtoy.ViewElement(text1, {
                         type: Geomtoy.ViewElementType.None,
